@@ -10,7 +10,7 @@ public class ChessController implements chess.ChessController {
         view.startView();
 
         view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 0, 1);
-        view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 1, 1);
+        view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 2, 1);
 
     }
 
