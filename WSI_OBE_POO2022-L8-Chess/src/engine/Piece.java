@@ -7,10 +7,11 @@ import engine.util.Coord;
 import java.util.List;
 
 public abstract class Piece {
-    private int x,y;
-    private boolean hasMoved;
-    private PlayerColor color;
-    private PieceType type;
+    int x;
+    int y;
+    boolean hasMoved;
+    PlayerColor color;
+    PieceType type;
 
     public Piece(int x, int y, PlayerColor color, PieceType type){
         this.x = x;

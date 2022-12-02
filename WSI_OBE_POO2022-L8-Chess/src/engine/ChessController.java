@@ -28,6 +28,14 @@ public class ChessController implements chess.ChessController {
         view.putPiece(PieceType.KNIGHT, PlayerColor.WHITE, 5,0);
         view.putPiece(PieceType.BISHOP, PlayerColor.WHITE, 6,0);
         view.putPiece(PieceType.ROOK, PlayerColor.WHITE, 7,0);
+        PlayerColor c = PlayerColor.WHITE;
+
+        for(int i = 0; i < 2; ++i){
+            for(int j = 0; j < 8;++j){
+                view.putPiece(PieceType.PAWN,c,j,1 + 5*i);
+            }
+            c = PlayerColor.BLACK;
+        }
 
         view.putPiece(PieceType.ROOK, PlayerColor.BLACK, 0, 7);
         view.putPiece(PieceType.BISHOP, PlayerColor.BLACK, 1,7);
