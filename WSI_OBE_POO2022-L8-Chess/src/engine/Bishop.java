@@ -5,6 +5,7 @@ import chess.PlayerColor;
 import engine.util.Coord;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.lang.Math;
 // @author : obaume
@@ -25,8 +26,8 @@ public class Bishop extends Piece{
 
     @Override
     List<List<Coord>> listMove() {
-        List<List<Coord>> vectors = new ArrayList<>();
-        List<Coord> v = new ArrayList<>();
+        List<List<Coord>> vectors = new LinkedList<>();
+        List<Coord> v = new LinkedList<>();
         int coefX = 1,coefY=1;
         for(int i = 0; i < 4; ++i){
             v = new ArrayList<>();

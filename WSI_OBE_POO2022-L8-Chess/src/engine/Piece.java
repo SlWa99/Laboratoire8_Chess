@@ -31,4 +31,12 @@ public abstract class Piece {
     abstract List<List<Coord>> listMove();
 
     abstract List<List<Coord>> listEatingMove();
+
+    public PieceType getType(){
+        return type;
+    }
+
+    public PlayerColor getColor() {
+        return color;
+    }
 }
