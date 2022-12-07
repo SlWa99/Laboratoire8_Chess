@@ -21,7 +21,7 @@ public class Pawn extends Piece{
     boolean acceptedMove(int toX, int toY) {
         int deltaX = this.x - toX;
         int deltaY = this.y - toY;
-        return ((!hasMoved && deltaY == -2*facing) || deltaY == -facing) && deltaX >= -1 && deltaX <= 1;
+        return (!hasMoved && deltaY == -2*facing && deltaX == 0) || (deltaY == -facing && deltaX >= -1 && deltaX <= 1);
     }
 
     @Override
