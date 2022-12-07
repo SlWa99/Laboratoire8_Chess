@@ -41,6 +41,7 @@ public class ChessController implements chess.ChessController {
         moves = refactorListMove(moves);
         if(!findCoordInListMove(moves,toX,toY)) return false;
         // déplacer la pièce au bon endroit
+        board[fromX][fromY].move(toX,toY);
         board[toX][toY] = board[fromX][fromY];
         board[fromX][fromY] = null;
         view.removePiece(fromX,fromY);
