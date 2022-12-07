@@ -10,8 +10,8 @@ import java.util.List;
 // @author : slimani
 public class Rook extends Piece {
     // region Constructor
-    public Rook(int x, int y, PlayerColor color, PieceType type) {
-        super(x, y, color, type);
+    public Rook(int x, int y, PlayerColor color) {
+        super(x, y, color, PieceType.ROOK);
     }
     // endregion
 

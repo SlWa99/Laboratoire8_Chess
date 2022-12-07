@@ -10,8 +10,8 @@ import java.util.List;
 // @author : slimani
 public class Queen extends Piece {
     // region Constructor
-    public Queen(int x, int y, PlayerColor color, PieceType type) {
-        super(x, y, color, type);
+    public Queen(int x, int y, PlayerColor color) {
+        super(x, y, color, PieceType.QUEEN);
     }
     // endregion
 

@@ -9,8 +9,8 @@ import java.util.List;
 public class Knight extends Piece{
 
     // region Constructor
-    public Knight(int x, int y, PlayerColor color, PieceType type) {
-        super(x, y, color, type);
+    public Knight(int x, int y, PlayerColor color) {
+        super(x, y, color, PieceType.KNIGHT);
     }
     // endregion
 
