@@ -8,10 +8,13 @@ import java.util.List;
 // @author : slimani
 public class Knight extends Piece{
 
+    // region Constructor
     public Knight(int x, int y, PlayerColor color, PieceType type) {
         super(x, y, color, type);
     }
+    // endregion
 
+    // region Methods
     @Override
     boolean acceptedMove(int toX, int toY) {
         int deltaX = Math.abs(toX - this.x);
@@ -29,4 +32,5 @@ public class Knight extends Piece{
     List<List<Coord>> listEatingMove() {
         return listMove();
     }
+    // endregion
 }

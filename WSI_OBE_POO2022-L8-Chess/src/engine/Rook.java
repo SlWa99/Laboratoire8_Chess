@@ -15,7 +15,6 @@ public class Rook extends Piece {
     }
     // endregion
 
-
     // region Parameters
     private final int NUMBER_OF_VECTOR = 4;
     // endregion
