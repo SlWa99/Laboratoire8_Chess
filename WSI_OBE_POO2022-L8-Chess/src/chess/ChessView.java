@@ -49,5 +49,4 @@ public interface ChessView {
    * @return l'option choisie par l'utilisateur parmis les choix proposés.
    */
   <T extends UserChoice> T askUser (String title, String question, T ... possibilities);
-
 }
