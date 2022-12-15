@@ -11,6 +11,8 @@ import java.util.List;
 
 public class ChessController implements chess.ChessController {
     private final int SIZE = 8;
+    // indique sur quelle colonne il y a eu un départ de 2 cases pour un pion
+    private int pawnJumpStart = -1;
     private ChessView view;
     private PlayerColor turn;
     private Piece[][] board;
@@ -25,6 +27,11 @@ public class ChessController implements chess.ChessController {
 
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
+        //TODO
+        // Verif echec et/ou mat
+        // Si en echec forcé la protection
+        // Rock
+
         // si il n'y a pas de piece sur cette case. on ne pourra pas se déplacer
         if (board[fromX][fromY] == null) return false;
         // si on essaie de deplacer une pièce de la mauvaise couleur
@@ -32,30 +39,46 @@ public class ChessController implements chess.ChessController {
         // si on ne peut pas se déplacer à la destination on indique cela
         if (!board[fromX][fromY].acceptedMove(toX, toY)) return false;
         List<List<Coord>> moves;
-        if (board[toX][toY] == null) {
-            moves = board[fromX][fromY].listMove();
+        if(board[toX][toY] == null){
+            if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
+                moves = board[fromX][fromY].listEatingMove();
+            } else {
+                moves = board[fromX][fromY].listMove();
+            }
         } else {
             // si on essaie de se déplacer sur une pièce de la même couleur que nous
             if (board[toX][toY].getColor() == turn) return false;
             moves = board[fromX][fromY].listEatingMove();
         }
+
         moves = refactorListMove(moves);
-        if (!findCoordInListMove(moves, toX, toY)) return false;
+        if(!findCoordInListMove(moves,toX,toY)) return false;
+        // check enpassant
+        if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
+            view.removePiece(pawnJumpStart,(turn == PlayerColor.WHITE?4:3));
+        }
+        if(board[fromX][fromY].getType() == PieceType.PAWN && Math.abs(fromY - toY) == 2){
+            pawnJumpStart = fromX;
+        } else {
+            pawnJumpStart = -1;
+        }
         // déplacer la pièce au bon endroit
         board[fromX][fromY].move(toX, toY);
         board[toX][toY] = board[fromX][fromY];
         board[fromX][fromY] = null;
-        view.removePiece(fromX, fromY);
-        view.putPiece(board[toX][toY].getType(), board[toX][toY].getColor(), toX, toY);
+        view.removePiece(fromX,fromY);
+        view.putPiece(board[toX][toY].getType(),board[toX][toY].getColor(),toX,toY);
         promotion(fromX, fromY, toX, toY);
-        turn = (turn == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
+        turn = (turn == PlayerColor.WHITE?PlayerColor.BLACK:PlayerColor.WHITE);
+        view.displayMessage("Turn : " + (turn== PlayerColor.WHITE ?"WHITE":"BLACK"));
         return true;
     }
 
-    public boolean findCoordInListMove(List<List<Coord>> listMove, int toX, int toY) {
-        for (List<Coord> list : listMove) {
-            for (Coord c : list) {
-                if (c.getX() == toX && c.getY() == toY) {
+    public boolean findCoordInListMove(List<List<Coord>> listMove,int toX,int toY){
+        Coord find = new Coord(toX,toY);
+        for(List<Coord> list : listMove){
+            for(Coord c : list){
+                if(find.isEqual(c)){
                     return true;
                 }
             }
@@ -83,7 +106,6 @@ public class ChessController implements chess.ChessController {
         }
         return refactorListMove;
     }
-
     @Override
     public void newGame() {
         cleanGUI();
