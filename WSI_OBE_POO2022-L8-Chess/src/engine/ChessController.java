@@ -1,11 +1,9 @@
 package engine;
 
 import chess.ChessView;
-import chess.PieceType;
 import chess.PlayerColor;
 import engine.util.Coord;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -98,16 +96,16 @@ public class ChessController implements chess.ChessController {
             }
         }
         for(int i = 0; i < 2; ++i) {
-            board[0][(0 + i * 7)] = new Rook(0, 0 + i * 7, c);
-            board[1][(0 + i * 7)] = new Knight(1, 0 + i * 7, c);
-            board[2][(0 + i * 7)] = new Bishop(2, 0 + i * 7, c);
-            board[3][(0 + i * 7)] = new Queen(3, 0 + i * 7, c);
-            board[4][(0 + i * 7)] = new King(4, 0 + i * 7, c);
-            board[5][(0 + i * 7)] = new Bishop(5, 0 + i * 7, c);
-            board[6][(0 + i * 7)] = new Knight(6, 0 + i * 7, c);
-            board[7][(0 + i * 7)] = new Rook(7, 0 + i * 7, c);
+            board[0][(i * 7)] = new Rook(new Coord(0, i * 7), c);
+            board[1][(i * 7)] = new Knight(new Coord(1, i * 7), c);
+            board[2][(i * 7)] = new Bishop(new Coord(2, i * 7), c);
+            board[3][(i * 7)] = new Queen(new Coord(3, i * 7), c);
+            board[4][(i * 7)] = new King(new Coord(4, i * 7), c);
+            board[5][(i * 7)] = new Bishop(new Coord(5, i * 7), c);
+            board[6][(i * 7)] = new Knight(new Coord(6, i * 7), c);
+            board[7][(i * 7)] = new Rook(new Coord(7, i * 7), c);
             for (int j = 0; j < SIZE; ++j) {
-                board[j][1 + 5 * i] = new Pawn(j, 1 + i * 5, c);
+                board[j][1 + 5 * i] = new Pawn(new Coord(j, 1 + i * 5), c);
             }
             c = PlayerColor.BLACK;
         }
@@ -130,4 +128,19 @@ public class ChessController implements chess.ChessController {
             }
         }
     }
+
+//    @Override
+//    public <T extends ChessView.UserChoice> T askUser(String title, String question, T... possibilities) {
+//    return null;
+//    }
+//
+//    <T extends ChessView.UserChoice> T askUser (String title, String question, T ... possibilities);
+//
+//
+//    private void promotion(int fromX, int fromY, int toX, int toY) {
+//        if (turn == PlayerColor.WHITE && toY == SIZE) {
+//           askUser("Promotion", "Take a piece", "Queen", "Rook", "Bishop", "Knight");
+//
+//        }
+//    }
 }

@@ -36,7 +36,7 @@ public interface ChessView {
    * A utiliser pour demander un choix à l'utilisateur. La vue utilisera le texte fourni par la méthode
    * pour représenter la valeur du choix proposé.
    */
-  interface UserChoice {
+  interface    UserChoice {
     String textValue();
   }
 

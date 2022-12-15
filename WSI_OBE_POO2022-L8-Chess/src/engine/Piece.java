@@ -7,15 +7,13 @@ import engine.util.Coord;
 import java.util.List;
 
 public abstract class Piece {
-    int x;
-    int y;
     boolean hasMoved;
     PlayerColor color;
     PieceType type;
+    Coord coord;
 
-    public Piece(int x, int y, PlayerColor color, PieceType type){
-        this.x = x;
-        this.y = y;
+        public Piece(Coord coord, PlayerColor color, PieceType type){
+        this.coord = coord;
         this.color = color;
         this.type = type;
         hasMoved = false;
@@ -24,8 +22,7 @@ public abstract class Piece {
     abstract boolean acceptedMove(int toX,int toY);
 
     public void move(int toX,int toY){
-        x = toX;
-        y = toY;
+        coord.setCoord(toX, toY);
     }
 
     abstract List<List<Coord>> listMove();

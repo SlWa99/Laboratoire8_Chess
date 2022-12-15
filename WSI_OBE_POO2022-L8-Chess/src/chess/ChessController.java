@@ -27,5 +27,4 @@ public interface ChessController {
    * Démarre une nouvelle partie. L'échiquier doit être remis dans sa position initiale.
    */
   void newGame();
-
 }

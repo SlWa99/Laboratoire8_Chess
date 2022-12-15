@@ -3,6 +3,7 @@ package engine;
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.util.Coord;
+import engine.util.MoveDiag;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,14 +12,23 @@ import java.lang.Math;
 // @author : obaume
 public class Bishop extends Piece{
 
-    public Bishop(int x, int y, PlayerColor color) {
-        super(x, y, color, PieceType.BISHOP);
+    // region Contructor
+    public Bishop(Coord coord, PlayerColor color) {
+        super(coord, color, PieceType.BISHOP);
+        md = new MoveDiag(8);
     }
+    // endregion
 
+    // region Parametre
+    private MoveDiag md;
+    // endregion
+
+
+    // region Methods
     @Override
     boolean acceptedMove(int toX, int toY) {
-        int deltaX = this.x - toX;
-        int deltaY = this.y - toY;
+        int deltaX = coord.getX() - toX;
+        int deltaY = coord.getY() - toY;
         if(deltaY == 0 || deltaX == 0) return false;
 
         return Math.abs(deltaX) == Math.abs(deltaY);
@@ -26,28 +36,12 @@ public class Bishop extends Piece{
 
     @Override
     List<List<Coord>> listMove() {
-        List<List<Coord>> vectors = new LinkedList<>();
-        List<Coord> v = new LinkedList<>();
-        int coefX = 1,coefY=1;
-        for(int i = 0; i < 4; ++i){
-            v = new ArrayList<>();
-            for(int j = 1; j < 8; ++j){
-                try{
-                    v.add(new Coord(this.x + j*coefX,this.y + j*coefY));
-                }catch (RuntimeException e){
-                    System.out.println(e.getMessage());
-                    break;
-                }
-            }
-            vectors.add(v);
-            if(i == 0 || i == 2)coefY = -1;
-            if(i == 1){coefX = -1;coefY=1;}
-        }
-        return vectors;
+    return md.listMove(coord);
     }
 
     @Override
     List<List<Coord>> listEatingMove() {
-        return listMove();
+        return md.listEatingMove(coord);
     }
+    // endregion
 }

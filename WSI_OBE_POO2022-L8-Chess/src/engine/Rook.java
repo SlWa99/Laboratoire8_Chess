@@ -3,6 +3,7 @@ package engine;
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.util.Coord;
+import engine.util.MoveLin;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,62 +11,34 @@ import java.util.List;
 // @author : slimani
 public class Rook extends Piece {
     // region Constructor
-    public Rook(int x, int y, PlayerColor color) {
-        super(x, y, color, PieceType.ROOK);
+    public Rook(Coord coord, PlayerColor color) {
+        super(coord, color, PieceType.ROOK);
+        ml = new MoveLin(8);
     }
     // endregion
 
     // region Parameters
-    private final int NUMBER_OF_VECTOR = 4;
+    MoveLin ml;
     // endregion
 
     // region Methods
     @Override
     boolean acceptedMove(int toX, int toY) {
-        int deltaX = Math.abs(toX - this.x);
-        int deltaY = Math.abs(toY - this.y);
+        int deltaX = Math.abs(toX - coord.getX());
+        int deltaY = Math.abs(toY - coord.getY());
 
         return deltaX != 0 && deltaY == 0 || deltaX == 0 && deltaY != 0;
     }
 
     @Override
     List<List<Coord>> listMove() {
-        List<List<Coord>> vectors = new LinkedList<>();
-        for (int i = 0; i < NUMBER_OF_VECTOR; ++i) {
-            LinkedList<Coord> tempVector = new LinkedList<>();
-            vectors.add(new LinkedList<Coord>());
-
-            for (int tempX = x; tempX < 7; ++tempX) {
-                for (int tempY = y; tempY < 7; ++tempY) {
-
-                    // Forward vector
-                    if (tempX > x && tempY == y) {
-                        tempVector.add(new Coord(tempX, tempY));
-                    }
-
-                    // Backward vector
-                    if (tempX < x && tempY == y) {
-                        tempVector.add(new Coord(tempX, tempY));
-                    }
-
-                    // Right vector
-                    if (tempX == x && tempY > y) {
-                        tempVector.add(new Coord(tempX, tempY));
-                    }
-
-                    // Left vector
-                    if (tempX == x && tempY < y)
-                        tempVector.add(new Coord(tempX, tempY));
-                }
-            }
-            vectors.add(tempVector);
-        }
-        return vectors;
+        return ml.listMove(coord);
     }
 
     @Override
     List<List<Coord>> listEatingMove() {
         return listMove();
     }
+
     // endregion
 }

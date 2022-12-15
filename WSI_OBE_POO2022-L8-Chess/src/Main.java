@@ -11,7 +11,7 @@ public class Main {
         ChessView view = new GUIView(controller); // mode GUI
         // = new ConsoleView(controller); // mode Console
 
-        // 3 . Lancement du programme.
+        // 3. Lancement du programme.
         controller.start(view);
     }
 }

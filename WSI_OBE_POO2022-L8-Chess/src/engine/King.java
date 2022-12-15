@@ -3,6 +3,8 @@ package engine;
 import chess.PieceType;
 import chess.PlayerColor;
 import engine.util.Coord;
+import engine.util.MoveDiag;
+import engine.util.MoveLin;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,8 +14,8 @@ public class King extends Piece{
 
     // coordonnées du petit rook et grand rook
     private Coord lRook,bRook;
-    public King(int x, int y, PlayerColor color) {
-        super(x, y, color, PieceType.KING);
+    public King(Coord coord, PlayerColor color) {
+        super(coord, color, PieceType.KING);
         if(color == PlayerColor.WHITE){
             lRook = new Coord(0,7);
             bRook = new Coord(0,0);
@@ -21,7 +23,14 @@ public class King extends Piece{
             lRook = new Coord(7,7);
             bRook = new Coord(7,0);
         }
+        md = new MoveDiag(1);
+        ml = new MoveLin(1);
     }
+
+    // region parametre
+    MoveDiag md;
+    MoveLin ml;
+    //endregion
 
     /***
      * @author Oscar Baume
@@ -33,8 +42,8 @@ public class King extends Piece{
     @Override
     boolean acceptedMove(int toX, int toY) {
         // on fait les delta pour x et y
-        int deltaX = this.x - toX;
-        int deltaY = this.y - toY;
+        int deltaX = coord.getX() - toX;
+        int deltaY = coord.getY() - toY;
         // si on se déplace pas le mouvement n'est pas accepté
         if(deltaY == deltaX && deltaY == 0) return false;
 
@@ -62,7 +71,7 @@ public class King extends Piece{
                 if(!(i==0&&j==0)){
                     try{
                         v = new ArrayList<Coord>();
-                        v.add(new Coord(this.x + i, this.y +j));
+                        v.add(new Coord(coord.getX() + i, coord.getY() +j));
                         vectors.add(v);
                     }catch (RuntimeException e){System.out.println(e.getMessage());}
                 }
@@ -96,7 +105,7 @@ public class King extends Piece{
                 if(!(i==0&&j==0)){
                     try{
                         v = new ArrayList<Coord>();
-                        v.add(new Coord(this.x + i, this.y +j));
+                        v.add(new Coord(coord.getX() + i, coord.getY() +j));
                         vectors.add(v);
                     }catch (RuntimeException e){System.out.println(e.getMessage());}
                 }
