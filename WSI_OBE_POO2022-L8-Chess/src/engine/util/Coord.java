@@ -28,6 +28,10 @@ public class Coord {
     public int getY() {
         return y;
     }
+
+    public boolean isEqual(Coord other){
+        return x == other.x && y == other.y;
+    }
     public String toString(){
         return "("+x+","+y+")";
     }
