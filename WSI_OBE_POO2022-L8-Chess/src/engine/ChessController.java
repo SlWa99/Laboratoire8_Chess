@@ -28,7 +28,7 @@ public class ChessController implements chess.ChessController {
         //TODO
         // Verif echec et/ou mat
         // Si en echec forcé la protection
-        //
+        // Rock
 
         // si il n'y a pas de piece sur cette case. on ne pourra pas se déplacer
         if(board[fromX][fromY] == null) return false;
@@ -67,7 +67,7 @@ public class ChessController implements chess.ChessController {
         view.removePiece(fromX,fromY);
         view.putPiece(board[toX][toY].getType(),board[toX][toY].getColor(),toX,toY);
         turn = (turn == PlayerColor.WHITE?PlayerColor.BLACK:PlayerColor.WHITE);
-        view.displayMessage("Traits aux " + (turn== PlayerColor.WHITE ?"blancs":"noirs"));
+        view.displayMessage("Turn : " + (turn== PlayerColor.WHITE ?"WHITE":"BLACK"));
         return true;
     }
 
