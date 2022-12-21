@@ -30,47 +30,18 @@ public class ChessController implements chess.ChessController {
         //TODO
         // Verif echec et/ou mat
         // Si en echec forcé la protection
-        // Rock
 
         // si il n'y a pas de piece sur cette case. on ne pourra pas se déplacer
-        if (board[fromX][fromY] == null) return false;
-        // si on essaie de deplacer une pièce de la mauvaise couleur
-        if (board[fromX][fromY].getColor() != turn) return false;
-        // si on ne peut pas se déplacer à la destination on indique cela
-        if (!board[fromX][fromY].acceptedMove(toX, toY)) return false;
-        List<List<Coord>> moves;
-        if(board[toX][toY] == null){
-            if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
-                moves = board[fromX][fromY].listEatingMove();
-            } else {
-                moves = board[fromX][fromY].listMove();
-            }
-        } else {
-            // si on essaie de se déplacer sur une pièce de la même couleur que nous
-            if (board[toX][toY].getColor() == turn) return false;
-            moves = board[fromX][fromY].listEatingMove();
-        }
-
-        moves = refactorListMove(moves);
+        if(!acceptMove(fromX,fromY,toX,toY)) {return false;}
+        List<List<Coord>> moves = refactorListMove(getMoves(fromX,fromY,toX,toY));
         if(!findCoordInListMove(moves,toX,toY)) return false;
-        // check enpassant
-        if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
-            view.removePiece(pawnJumpStart,(turn == PlayerColor.WHITE?4:3));
+        // si gestion castle return false ça veut dire qu'on fait pas un rook (pas de déplacement)
+        if(!gestionCastle(fromX,fromY,toX,toY)) {
+            gestionEnPassant(fromX, fromY, toX, toY);
+            movePiece(fromX, fromY, toX, toY);
+            gestionPromotion(fromX, fromY, toX, toY);
         }
-        if(board[fromX][fromY].getType() == PieceType.PAWN && Math.abs(fromY - toY) == 2){
-            pawnJumpStart = fromX;
-        } else {
-            pawnJumpStart = -1;
-        }
-        // déplacer la pièce au bon endroit
-        board[fromX][fromY].move(toX, toY);
-        board[toX][toY] = board[fromX][fromY];
-        board[fromX][fromY] = null;
-        view.removePiece(fromX,fromY);
-        view.putPiece(board[toX][toY].getType(),board[toX][toY].getColor(),toX,toY);
-        promotion(fromX, fromY, toX, toY);
-        turn = (turn == PlayerColor.WHITE?PlayerColor.BLACK:PlayerColor.WHITE);
-        view.displayMessage("Turn : " + (turn== PlayerColor.WHITE ?"WHITE":"BLACK"));
+        changeTurn();
         return true;
     }
 
@@ -105,6 +76,73 @@ public class ChessController implements chess.ChessController {
             refactorListMove.add(refactoredVect);
         }
         return refactorListMove;
+    }
+    public boolean acceptMove(int fromX, int fromY, int toX, int toY){
+        if (board[fromX][fromY] == null) return false;
+        // si on essaie de deplacer une pièce de la mauvaise couleur
+        if (board[fromX][fromY].getColor() != turn) return false;
+        // si on ne peut pas se déplacer à la destination on indique cela
+        if (!board[fromX][fromY].acceptedMove(toX, toY)) return false;
+        // si on essaie de se déplacer sur une pièce de la même couleur que nous
+        if (board[toX][toY] != null && board[toX][toY].getColor() == turn) return false;
+        return true;
+    }
+    public List<List<Coord>> getMoves(int fromX, int fromY, int toX, int toY){
+        if(board[toX][toY] == null){
+            if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
+                return board[fromX][fromY].listEatingMove();
+            } else {
+                return board[fromX][fromY].listMove();
+            }
+        } else {
+            return board[fromX][fromY].listEatingMove();
+        }
+    }
+    public void gestionEnPassant(int fromX, int fromY, int toX, int toY){
+        // check enpassant
+        if(board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE?4:3)){
+            view.removePiece(pawnJumpStart,(turn == PlayerColor.WHITE?4:3));
+        }
+        if(board[fromX][fromY].getType() == PieceType.PAWN && Math.abs(fromY - toY) == 2){
+            pawnJumpStart = fromX;
+        } else {
+            pawnJumpStart = -1;
+        }
+    }
+    public boolean gestionCastle(int fromX,int fromY,int toX, int toY){
+        // check si on a un roi et une tour de la même couleur et qui n'ont pas bougé
+        if(board[fromX][fromY].getType() != PieceType.KING
+                || board[toX][toY] != null
+                || board[fromX][fromY].hasMoved) return false;
+        int castleX = (toX == Math.min(fromX, toX) ? 0:7);
+        if(!(board[castleX][fromY] != null
+                && board[castleX][fromY].getType() == PieceType.ROOK
+                && board[castleX][fromY].getColor() == board[fromX][fromY].getColor()
+                && !board[castleX][fromY].hasMoved)) return false;
+        int left = Math.min(fromX,castleX);
+        int right = Math.max(fromX, castleX);
+        // vérif si la voie est libre entre le roi et la tour
+        for(int i = left + 1; i < right; ++i){
+            if(board[i][fromY] != null) return false;
+        }
+        // on peut effectuer le rock
+        // bouge le roi
+        movePiece(fromX,fromY,toX,toY);
+        // bouge la tour
+        movePiece(castleX,fromY,toX + ((fromX-toX)/2),toY);
+        return true;
+    }
+    public void changeTurn(){
+        turn = (turn == PlayerColor.WHITE?PlayerColor.BLACK:PlayerColor.WHITE);
+        view.displayMessage("Turn : " + (turn== PlayerColor.WHITE ?"WHITE":"BLACK"));
+    }
+    public void movePiece(int fromX, int fromY, int toX, int toY){
+        // déplacer la pièce au bon endroit
+        board[fromX][fromY].move(toX, toY);
+        board[toX][toY] = board[fromX][fromY];
+        board[fromX][fromY] = null;
+        view.removePiece(fromX,fromY);
+        view.putPiece(board[toX][toY].getType(),board[toX][toY].getColor(),toX,toY);
     }
     @Override
     public void newGame() {
@@ -158,7 +196,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    private void promotion(int fromX, int fromY, int toX, int toY) {
+    private void gestionPromotion(int fromX, int fromY, int toX, int toY) {
         if (board[toX][toY].getType() == PieceType.PAWN) {
             if (turn == PlayerColor.WHITE && toY == SIZE - 1 || turn == PlayerColor.BLACK && toY == 0) {
                 view.removePiece(toX, toY);

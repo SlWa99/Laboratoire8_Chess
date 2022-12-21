@@ -13,15 +13,15 @@ import java.util.List;
 public class King extends Piece{
 
     // coordonnées du petit rook et grand rook
-    private Coord lRook,bRook;
+    private Coord lCastle, bCastle;
     public King(Coord coord, PlayerColor color) {
         super(coord, color, PieceType.KING);
         if(color == PlayerColor.WHITE){
-            lRook = new Coord(0,7);
-            bRook = new Coord(0,0);
+            lCastle = new Coord(6,0);
+            bCastle = new Coord(2,0);
         } else{
-            lRook = new Coord(7,7);
-            bRook = new Coord(7,0);
+            lCastle = new Coord(6,7);
+            bCastle = new Coord(2,7);
         }
         md = new MoveDiag(1);
         ml = new MoveLin(1);
@@ -51,8 +51,8 @@ public class King extends Piece{
         // si le delta^2 est égale à 0 ou à 1 alors on peut se deplacer là (1ère ligne du return)
         // si le roi n'a pas bougé et qu'il veut rooker alors il peut se deplacer là  (2e et 3e ligne du return)
         return (deltaX * deltaX <= 1 && deltaY * deltaY <= 1) ||
-               (!hasMoved && ((color == PlayerColor.WHITE) && toY == 0 && (toX == 0 || toX == 7) ||
-               ((color == PlayerColor.BLACK) && toY == 7 && (toX == 0 || toX == 7))));
+               (!hasMoved && ((color == PlayerColor.WHITE) && toY == 0 && (toX == 2 || toX == 6) ||
+               ((color == PlayerColor.BLACK) && toY == 7 && (toX == 2 || toX == 6))));
     }
 
     /***
@@ -80,10 +80,10 @@ public class King extends Piece{
         // si le roi n'a pas bougé alors il peut rooker
         if(!hasMoved){
             v = new ArrayList<>();
-            v.add(lRook);
+            v.add(lCastle);
             vectors.add(v);
             v = new ArrayList<>();
-            v.add(bRook);
+            v.add(bCastle);
             vectors.add(v);
         }
         return vectors;

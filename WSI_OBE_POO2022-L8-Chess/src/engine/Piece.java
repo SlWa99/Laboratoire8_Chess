@@ -12,7 +12,7 @@ public abstract class Piece {
     PieceType type;
     Coord coord;
 
-        public Piece(Coord coord, PlayerColor color, PieceType type){
+    public Piece(Coord coord, PlayerColor color, PieceType type){
         this.coord = coord;
         this.color = color;
         this.type = type;
