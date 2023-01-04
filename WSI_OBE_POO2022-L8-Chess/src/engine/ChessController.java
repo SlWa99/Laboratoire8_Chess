@@ -6,10 +6,8 @@ import chess.PlayerColor;
 import engine.util.Coord;
 import engine.util.PromotionChoice;
 
-import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class ChessController implements chess.ChessController {
     private final int SIZE = 8;
@@ -18,7 +16,6 @@ public class ChessController implements chess.ChessController {
     private ChessView view;
     private PlayerColor turn;
     private Piece[][] board;
-    //private boolean check;
     private boolean checkMate;
 
 
@@ -47,7 +44,7 @@ public class ChessController implements chess.ChessController {
         if (!gestionCastle(fromX, fromY, toX, toY)) {
             gestionEnPassant(fromX, fromY, toX, toY);
             movePiece(fromX, fromY, toX, toY);
-            gestionPromotion(fromX, fromY, toX, toY);
+            gestionPromotion(toX, toY);
         }
 
         // On vérifie qu'on ne se mette pas en échec tout seul
@@ -63,11 +60,11 @@ public class ChessController implements chess.ChessController {
         if (checkMat(attackers)) {
             view.displayMessage("The " + (turn == PlayerColor.WHITE ? "BLACK" : "WHITE") + " king is in check !");
 
-
             canProtectHisKingByEating(attackers, defenders);
             canCoverHisKing(attackers, defenders);
             canMoveHisKing(attackers);
             canStrengthenAttack(attackers);
+
             if (defenders.size() < attackers.size()) {
                 checkMate = true;
                 view.displayMessage("Checkmate, " + (turn != PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
@@ -81,12 +78,11 @@ public class ChessController implements chess.ChessController {
 //                return true;
 //            }
         }
-
         changeTurn();
         return true;
     }
 
-    public boolean findCoordInListMove(List<List<Coord>> listMove, int toX, int toY) {
+    private boolean findCoordInListMove(List<List<Coord>> listMove, int toX, int toY) {
         Coord find = new Coord(toX, toY);
         for (List<Coord> list : listMove) {
             for (Coord c : list) {
@@ -98,7 +94,7 @@ public class ChessController implements chess.ChessController {
         return false;
     }
 
-    public List<List<Coord>> refactorListMove(List<List<Coord>> listMove) {
+    private List<List<Coord>> refactorListMove(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
         for (List<Coord> vect : listMove) {
@@ -126,7 +122,7 @@ public class ChessController implements chess.ChessController {
         return refactorListMove;
     }
 
-    public boolean acceptMove(int fromX, int fromY, int toX, int toY) {
+    private boolean acceptMove(int fromX, int fromY, int toX, int toY) {
         if (board[fromX][fromY] == null) return false;
         // si on essaie de deplacer une pièce de la mauvaise couleur
         if (board[fromX][fromY].getColor() != turn) return false;
@@ -137,7 +133,7 @@ public class ChessController implements chess.ChessController {
         return true;
     }
 
-    public List<List<Coord>> getMoves(int fromX, int fromY, int toX, int toY) {
+    private List<List<Coord>> getMoves(int fromX, int fromY, int toX, int toY) {
         if (board[toX][toY] == null) {
             if (board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE ? 4 : 3)) {
                 return board[fromX][fromY].listEatingMove();
@@ -149,7 +145,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    public void gestionEnPassant(int fromX, int fromY, int toX, int toY) {
+    private void gestionEnPassant(int fromX, int fromY, int toX, int toY) {
         // check enpassant
         if (board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE ? 4 : 3)) {
             view.removePiece(pawnJumpStart, (turn == PlayerColor.WHITE ? 4 : 3));
@@ -161,7 +157,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    public boolean gestionCastle(int fromX, int fromY, int toX, int toY) {
+    private boolean gestionCastle(int fromX, int fromY, int toX, int toY) {
         // check si on a un roi et une tour de la même couleur et qui n'ont pas bougé
         if (board[fromX][fromY].getType() != PieceType.KING
                 || board[toX][toY] != null
@@ -185,12 +181,12 @@ public class ChessController implements chess.ChessController {
         return true;
     }
 
-    public void changeTurn() {
+    private void changeTurn() {
         turn = (turn == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
         //view.displayMessage("Turn : " + (turn == PlayerColor.WHITE ? "WHITE" : "BLACK"));
     }
 
-    public void movePiece(int fromX, int fromY, int toX, int toY) {
+    private void movePiece(int fromX, int fromY, int toX, int toY) {
         // déplacer la pièce au bon endroit
         board[fromX][fromY].move(toX, toY);
         board[toX][toY] = board[fromX][fromY];
@@ -209,7 +205,7 @@ public class ChessController implements chess.ChessController {
         setGUI();
     }
 
-    public void setBoard() {
+    private void setBoard() {
         if (board == null) return;
         PlayerColor c = PlayerColor.WHITE;
         for (int i = 0; i < SIZE; ++i) {
@@ -233,7 +229,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    public void cleanGUI() {
+    private void cleanGUI() {
         if (view == null) return;
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
@@ -242,7 +238,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    public void setGUI() {
+    private void setGUI() {
         if (view == null || board == null) return;
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
@@ -252,7 +248,7 @@ public class ChessController implements chess.ChessController {
         }
     }
 
-    private void gestionPromotion(int fromX, int fromY, int toX, int toY) {
+    private void gestionPromotion(int toX, int toY) {
         if (board[toX][toY].getType() == PieceType.PAWN) {
             if (turn == PlayerColor.WHITE && toY == SIZE - 1 || turn == PlayerColor.BLACK && toY == 0) {
                 view.removePiece(toX, toY);
@@ -574,7 +570,6 @@ public class ChessController implements chess.ChessController {
         return attackers.size() - nbrAttackers != 0;
     }
 
-
     private List<List<Coord>> supportAttackMove(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
@@ -591,5 +586,4 @@ public class ChessController implements chess.ChessController {
         }
         return refactorListMove;
     }
-
 }
