@@ -27,7 +27,6 @@ public class ChessController implements chess.ChessController {
         this.view = view;
         view.startView();
         board = new Piece[SIZE][SIZE];
-        checkMate = false;
         newGame();
     }
 
@@ -60,13 +59,27 @@ public class ChessController implements chess.ChessController {
 
         // On regarde s'il y a échec et remplie une liste de toutes les pièces qui mettent échec
         LinkedList<Coord> attackers = new LinkedList<>();
+        LinkedList<Coord> defenders = new LinkedList<>();
         if (checkMat(attackers)) {
             view.displayMessage("The " + (turn == PlayerColor.WHITE ? "BLACK" : "WHITE") + " king is in check !");
-            if (!canProtectHisKingByEating(attackers) && !canCoverHisKing(attackers) && !canMoveHisKing(attackers)) {
+
+
+            canProtectHisKingByEating(attackers, defenders);
+            canCoverHisKing(attackers, defenders);
+            canMoveHisKing(attackers);
+            canStrengthenAttack(attackers);
+            if (defenders.size() < attackers.size()) {
                 checkMate = true;
-                view.displayMessage("Checkmate, " + (turn == PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
+                view.displayMessage("Checkmate, " + (turn != PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
                 return true;
             }
+
+//            if (!canProtectHisKingByEating(attackers, defenders) && !canCoverHisKing(attackers, defenders) &&
+//                    !canMoveHisKing(attackers) && defenders.size() < attackers.size()) {
+//                checkMate = true;
+//                view.displayMessage("Checkmate, " + (turn == PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
+//                return true;
+//            }
         }
 
         changeTurn();
@@ -189,6 +202,7 @@ public class ChessController implements chess.ChessController {
     @Override
     public void newGame() {
         cleanGUI();
+        checkMate = false;
         board = new Piece[SIZE][SIZE];
         turn = PlayerColor.WHITE;
         setBoard();
@@ -376,7 +390,7 @@ public class ChessController implements chess.ChessController {
         return null;
     }
 
-    private boolean canProtectHisKingByEating(LinkedList<Coord> attackers) {
+    private boolean canProtectHisKingByEating(LinkedList<Coord> attackers, LinkedList<Coord> defenders) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
                 if (board[i][j] != null && board[i][j].color != turn) {
@@ -385,13 +399,15 @@ public class ChessController implements chess.ChessController {
 
                     for (Coord c : attackers) {
                         if (findCoordInListMove(defensiveMoveByEating, c.getX(), c.getY())) {
-                            return true;
+                            if (!defenders.contains(board[i][j].coord)) {
+                                defenders.add(board[i][j].coord);
+                            }
                         }
                     }
                 }
             }
         }
-        return false;
+        return defenders.size() != 0;
     }
 
     private List<List<Coord>> defensiveMoveByEating(List<List<Coord>> listMove) {
@@ -417,7 +433,7 @@ public class ChessController implements chess.ChessController {
         return refactorListMove;
     }
 
-    private boolean canCoverHisKing(LinkedList<Coord> attackers) {
+    private boolean canCoverHisKing(LinkedList<Coord> attackers, LinkedList<Coord> defenders) {
         // On cherche la position du roi allié qui est attaqué
         List<Coord> kingPos = findKings();
         Coord allyKingPos = turn == PlayerColor.WHITE ? kingPos.get(1) : kingPos.get(0);
@@ -456,14 +472,16 @@ public class ChessController implements chess.ChessController {
 
                         for (Coord pos : listWhichContainsKingPos) {
                             if (findCoordInListMove(defensiveMoveByMoving, pos.getX(), pos.getY())) {
-                                return true;
+                                if (!defenders.contains(board[i][j].coord)) {
+                                    defenders.add(board[i][j].coord);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        return false;
+        return defenders.size() != 0;
     }
 
     private List<List<Coord>> defensiveMoveByCover(List<List<Coord>> listMove) {
@@ -529,6 +547,49 @@ public class ChessController implements chess.ChessController {
                 }
             }
         }
-        return defensiveMoveByMoving.size() > 0;
+        return defensiveMoveByMoving.size() > 0;    // Si le roi ne peut pas se déplacer, il est maté
     }
+
+    private boolean canStrengthenAttack(LinkedList<Coord> attackers) {
+        int nbrAttackers = attackers.size();
+        LinkedList<Coord> tmp = new LinkedList<>();
+        for (int i = 0; i < SIZE; ++i) {
+            for (int j = 0; j < SIZE; ++j) {
+                if (board[i][j] != null && board[i][j].color == turn) {
+                    List<List<Coord>> allyMoves = board[i][j].listEatingMove();
+                    List<List<Coord>> supportAttackMoves = supportAttackMove(allyMoves);
+                    for (Coord c : attackers) {
+                        for(List<Coord> l : supportAttackMoves) {
+                            for(Coord s : l) {
+                                if (s.isEqual(c)) {
+                                    tmp.add(s);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        attackers.addAll(tmp);
+        return attackers.size() - nbrAttackers != 0;
+    }
+
+
+    private List<List<Coord>> supportAttackMove(List<List<Coord>> listMove) {
+        List<List<Coord>> refactorListMove = new LinkedList<>();
+        List<Coord> refactoredVect;
+        for (List<Coord> vect : listMove) {
+            refactoredVect = new LinkedList<>();
+            for (Coord c : vect) {
+                if (board[c.getX()][c.getY()] != null) {
+                    if (board[c.getX()][c.getY()].getColor() == turn) {
+                        refactoredVect.add(c);
+                    }
+                }
+            }
+            refactorListMove.add(refactoredVect);
+        }
+        return refactorListMove;
+    }
+
 }
