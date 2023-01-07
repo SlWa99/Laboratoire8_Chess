@@ -5,11 +5,22 @@ import chess.PieceType;
 import chess.PlayerColor;
 import engine.util.Coord;
 import engine.util.PromotionChoice;
-
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe permet de gérer toute l'intelligence nécessaire pour un jeu d'échecs.
+ *                 C'est dans cette classe qu'est codée la gestion du rock, de la prise en passant
+ *                 ou encore des échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
+
 public class ChessController implements chess.ChessController {
+    // region Parameter
     private final int SIZE = 8;
     // indique sur quelle colonne il y a eu un départ de 2 cases pour un pion
     private int pawnJumpStart = -1;
@@ -17,8 +28,9 @@ public class ChessController implements chess.ChessController {
     private PlayerColor turn;
     private Piece[][] board;
     private boolean checkMate;
+    // endregion
 
-
+    // region Methods
     @Override
     public void start(ChessView view) {
         this.view = view;
@@ -70,14 +82,8 @@ public class ChessController implements chess.ChessController {
                 view.displayMessage("Checkmate, " + (turn != PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
                 return true;
             }
-
-//            if (!canProtectHisKingByEating(attackers, defenders) && !canCoverHisKing(attackers, defenders) &&
-//                    !canMoveHisKing(attackers) && defenders.size() < attackers.size()) {
-//                checkMate = true;
-//                view.displayMessage("Checkmate, " + (turn == PlayerColor.WHITE ? "BLACK" : "WHITE") + " wins !");
-//                return true;
-//            }
         }
+
         changeTurn();
         return true;
     }
@@ -248,6 +254,14 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Nom         : gestionPromotion
+     * Description : Vérifie si la promotion à lieu d'être et échange le pion promu avec la pièce
+     *               choisie avec l'utilisateur.
+     * @param toX  : Coordonné en X ou le pion a été déplacé et ou il faut créer la nouvelle pièce
+     * @param toY  : Coordonné en Y ou le pion a été déplacé et ou il faut créer la nouvelle pièce
+     * @return     : / void
+     **/
     private void gestionPromotion(int toX, int toY) {
         if (board[toX][toY].getType() == PieceType.PAWN) {
             if (turn == PlayerColor.WHITE && toY == SIZE - 1 || turn == PlayerColor.BLACK && toY == 0) {
@@ -311,6 +325,12 @@ public class ChessController implements chess.ChessController {
         view.putPiece(p.getType(), p.getColor(), toX, toY);
     }
 
+    /**
+     * Nom              : checkMat
+     * Description      : Vérifie l'on met l'adversaire en échec et mat
+     * @param attackers : Liste contenant toutes les pièces qui attaquent le roi
+     * @return          : Booléen indiquant si le roi adverse est en échec
+     **/
     private boolean checkMat(LinkedList<Coord> attackers) {
         // On cherche la position du roi adverse
         List<Coord> kingPos = findKings();
@@ -333,6 +353,11 @@ public class ChessController implements chess.ChessController {
         return attackers.size() != 0;
     }
 
+    /**
+     * Nom              : checkSelfMat
+     * Description      : Vérifie l'on ne se met pas tout seul en échec à la suite d'un mouvement
+     * @return          : Booléen indiquant si notre roi est mis en échec.
+     **/
     private boolean checkSelfMat() {
         // On cherche la position de son roi
         List<Coord> kingPos = findKings();
@@ -355,6 +380,13 @@ public class ChessController implements chess.ChessController {
         return false;
     }
 
+
+    /**
+     * Nom              : findKings
+     * Description      : Permet de trouver la position des rois.
+     * @return          : List de coordonnées des rois. Le roi blanc est toujours en tête de liste
+     *                    suivi par le roi noir.
+     **/
     private List<Coord> findKings() {   // list[0] = white, liste[1] = black
         List<Coord> kingsPos = new LinkedList<Coord>();
 
@@ -386,6 +418,14 @@ public class ChessController implements chess.ChessController {
         return null;
     }
 
+    /**
+     * Nom              : canProtectHisKingByEating
+     * Description      : Vérifie si on peut protéger son roi en mangeant les attaquants
+     * @param attackers : Liste contenant toutes les pièces qui attaquent le roi
+     * @param defenders : Liste contenant toutes les pièces alliées qui peuvent protéger le roi
+     *                    en mangeant un attaquant.
+     * @return          : Booléen indiquant si le roi peut être protégé de tous les attaquants
+     **/
     private boolean canProtectHisKingByEating(LinkedList<Coord> attackers, LinkedList<Coord> defenders) {
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
@@ -406,6 +446,14 @@ public class ChessController implements chess.ChessController {
         return defenders.size() != 0;
     }
 
+    /**
+     * Nom              : defensiveMoveByEating
+     * Description      : Cette méthode prend la liste qui contient tous les mouvement possibles d'une pièce
+     *                    puis cette liste est mise à jour en gardant uniquement les mouvements ou l'on peut
+     *                    manger une pièce ennemie.
+     * @param listMove : Liste de tous les mouvements possibles d'une pièce
+     * @return          : La liste mise à jours.
+     **/
     private List<List<Coord>> defensiveMoveByEating(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
@@ -429,6 +477,13 @@ public class ChessController implements chess.ChessController {
         return refactorListMove;
     }
 
+    /**
+     * Nom              : canCoverHisKing
+     * Description      : Vérifie si on peut protéger son roi en s'interposant entre le roi et un attaquant.
+     * @param attackers : Liste contenant toutes les pièces qui attaquent le roi.
+     * @param defenders : Liste contenant toutes les pièces alliées qui peuvent protéger le roi.
+     * @return          : Booléen indiquant si le roi peut être protégé de tous les attaquantss
+     **/
     private boolean canCoverHisKing(LinkedList<Coord> attackers, LinkedList<Coord> defenders) {
         // On cherche la position du roi allié qui est attaqué
         List<Coord> kingPos = findKings();
@@ -480,6 +535,14 @@ public class ChessController implements chess.ChessController {
         return defenders.size() != 0;
     }
 
+    /**
+     * Nom              : defensiveMoveByCover
+     * Description      : Cette méthode prend la liste qui contient tous les mouvements possibles d'une pièce
+     *                    puis cette liste est mise à jour en gardant uniquement les mouvements ou l'on peut
+     *                    couvrir le roi.
+     * @param listMove  : Liste de tous les mouvements possibles d'une pièce
+     * @return          : La liste mises à jour.
+     **/
     private List<List<Coord>> defensiveMoveByCover(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
@@ -498,6 +561,12 @@ public class ChessController implements chess.ChessController {
         return refactorListMove;
     }
 
+    /**
+     * Nom              : canMoveHisKing
+     * Description      : Vérifie si le roi peut se déplacer est se sortir de la mise en échec
+     * @param attackers : Liste contenant toutes les pièces qui attaquent le roi
+     * @return          : Booléen indiquant si le roi peut se protéger en se déplaçant.
+     **/
     private boolean canMoveHisKing(LinkedList<Coord> attackers) {
         // On cherche la position du roi allié qui est attaqué
         List<Coord> kingPos = findKings();
@@ -546,6 +615,12 @@ public class ChessController implements chess.ChessController {
         return defensiveMoveByMoving.size() > 0;    // Si le roi ne peut pas se déplacer, il est maté
     }
 
+    /**
+     * Nom              : canStrengthenAttack
+     * Description      : Vérifie si une pièce peut couvrir une pièce qui met échec au roi adverse
+     * @param attackers : Liste contenant toutes les pièces qui attaquent le roi adverse
+     * @return          : Booléen indiquant si au moins une pièce peut supporter l'attaque.
+     **/
     private boolean canStrengthenAttack(LinkedList<Coord> attackers) {
         int nbrAttackers = attackers.size();
         LinkedList<Coord> tmp = new LinkedList<>();
@@ -570,6 +645,14 @@ public class ChessController implements chess.ChessController {
         return attackers.size() - nbrAttackers != 0;
     }
 
+    /**
+     * Nom              : supportAttackMove
+     * Description      : Cette méthode prend la liste qui contient tous les mouvements possibles d'une pièce
+     *                    puis cette liste est mise à jour en gardant uniquement les mouvements ou l'on peut
+     *                    couvrir une pièce alliée qui attaque le roi adverse.
+     * @param listMove  : Liste de tous les mouvements possibles d'une pièce
+     * @return          : La liste mises à jour.
+     **/
     private List<List<Coord>> supportAttackMove(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
@@ -586,4 +669,5 @@ public class ChessController implements chess.ChessController {
         }
         return refactorListMove;
     }
+    // en region
 }
