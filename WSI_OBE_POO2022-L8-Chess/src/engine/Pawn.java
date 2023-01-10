@@ -45,12 +45,34 @@ public class Pawn extends Piece{
 
     @Override
     List<List<Coord>> listMove() {
-        return ml.listMove(coord);
+        List<List<Coord>> vect = ml.listMove(coord);
+        List<List<Coord>> out = new LinkedList<>();
+        for(List<Coord> moves : vect){
+            List<Coord> v = new LinkedList<>();
+            for(Coord c : moves){
+                if(acceptedMove(c.getX(),c.getY())){
+                    v.add(c);
+                }
+                out.add(v);
+            }
+        }
+        return out;
     }
 
     @Override
     List<List<Coord>> listEatingMove() {
-        return md.listMove(coord);
+        List<List<Coord>> vect = md.listMove(coord);
+        List<List<Coord>> out = new LinkedList<>();
+        for(List<Coord> moves : vect){
+            List<Coord> v = new LinkedList<>();
+            for(Coord c : moves){
+                if(acceptedMove(c.getX(),c.getY())){
+                    v.add(c);
+                }
+                out.add(v);
+            }
+        }
+        return out;
     }
     // endregion
 }

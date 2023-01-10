@@ -18,15 +18,25 @@ public class ChessController implements chess.ChessController {
     private Piece[][] board;
     private boolean checkMate;
 
-
+    /**
+     * Méthode qui initialise la vue et démarre une nouvelle partie
+     * @param view la vue à utiliser
+     */
     @Override
     public void start(ChessView view) {
         this.view = view;
         view.startView();
-        board = new Piece[SIZE][SIZE];
         newGame();
     }
 
+    /**
+     * Méthode qui gère les mouvements
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     * @return boolean qui indique si un mouvement a été éffectué
+     */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
         if (checkMate) {
@@ -40,7 +50,7 @@ public class ChessController implements chess.ChessController {
         }
         List<List<Coord>> moves = refactorListMove(getMoves(fromX, fromY, toX, toY));
         if (!findCoordInListMove(moves, toX, toY)) return false;
-        // si gestion castle return false ça veut dire qu'on fait pas un rook (pas de déplacement)
+        // si gestion castle return false ça veut dire qu'on fait pas un roque (pas de déplacement)
         if (!gestionCastle(fromX, fromY, toX, toY)) {
             gestionEnPassant(fromX, fromY, toX, toY);
             movePiece(fromX, fromY, toX, toY);
@@ -82,6 +92,13 @@ public class ChessController implements chess.ChessController {
         return true;
     }
 
+    /**
+     * Méthode qui va chercher un coordonnée dans une liste de liste de coordonnées
+     * @param listMove liste de liste dans laquelle on cherche la coord (toX,toY)
+     * @param toX postion x qu'on cherche
+     * @param toY postion y qu'on cherche
+     * @return
+     */
     private boolean findCoordInListMove(List<List<Coord>> listMove, int toX, int toY) {
         Coord find = new Coord(toX, toY);
         for (List<Coord> list : listMove) {
@@ -94,6 +111,11 @@ public class ChessController implements chess.ChessController {
         return false;
     }
 
+    /**
+     * Méthiode qui va enlever les mouvements illicites
+     * @param listMove la liste de mouvement que l'on veut remanier
+     * @return la nouvelle liste sans les mouvements illicites
+     */
     private List<List<Coord>> refactorListMove(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
         List<Coord> refactoredVect;
@@ -122,6 +144,18 @@ public class ChessController implements chess.ChessController {
         return refactorListMove;
     }
 
+    /**
+     * Méthode qui indique si un mouvement est correct,
+     * si il y a une pièce à la coordonnées (fromX,fromY)
+     * si la pièce à la bonne couleur
+     * si cette pièce peut se déplacer vers (toX,toY)
+     * si la destination n'est pas occupé ou est occupé par une pièce adverse
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     * @return si le mouvement est accepté
+     */
     private boolean acceptMove(int fromX, int fromY, int toX, int toY) {
         if (board[fromX][fromY] == null) return false;
         // si on essaie de deplacer une pièce de la mauvaise couleur
@@ -129,10 +163,17 @@ public class ChessController implements chess.ChessController {
         // si on ne peut pas se déplacer à la destination on indique cela
         if (!board[fromX][fromY].acceptedMove(toX, toY)) return false;
         // si on essaie de se déplacer sur une pièce de la même couleur que nous
-        if (board[toX][toY] != null && board[toX][toY].getColor() == turn) return false;
-        return true;
+        return board[toX][toY] == null || board[toX][toY].getColor() != turn;
     }
 
+    /**
+     * Méthode qui retourne la liste de mouvements correct pour une pièce donné
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     * @return la liste de mouvements de la pièce qui se trouve à (fromX,fromY)
+     */
     private List<List<Coord>> getMoves(int fromX, int fromY, int toX, int toY) {
         if (board[toX][toY] == null) {
             if (board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE ? 4 : 3)) {
@@ -145,10 +186,18 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Méthode qui gère la prise en passant
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     */
     private void gestionEnPassant(int fromX, int fromY, int toX, int toY) {
         // check enpassant
         if (board[fromX][fromY].getType() == PieceType.PAWN && toX == pawnJumpStart && fromY == (turn == PlayerColor.WHITE ? 4 : 3)) {
             view.removePiece(pawnJumpStart, (turn == PlayerColor.WHITE ? 4 : 3));
+            board[pawnJumpStart][(turn == PlayerColor.WHITE ? 4 : 3)] = null;
         }
         if (board[fromX][fromY].getType() == PieceType.PAWN && Math.abs(fromY - toY) == 2) {
             pawnJumpStart = fromX;
@@ -157,11 +206,26 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Méthode qui gère le grand et petit roque
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     * @return si on effectue un roque
+     */
     private boolean gestionCastle(int fromX, int fromY, int toX, int toY) {
+        // si on est en échec
+        if(checkSelfMat()){
+            // on ne peut pas effectué de roque
+            return false;
+        }
         // check si on a un roi et une tour de la même couleur et qui n'ont pas bougé
         if (board[fromX][fromY].getType() != PieceType.KING
                 || board[toX][toY] != null
-                || board[fromX][fromY].hasMoved) return false;
+                || board[fromX][fromY].hasMoved
+                || fromY != toY
+                || !(toX == 1 || toX == 6)) return false;
         int castleX = (toX == Math.min(fromX, toX) ? 0 : 7);
         if (!(board[castleX][fromY] != null
                 && board[castleX][fromY].getType() == PieceType.ROOK
@@ -181,11 +245,20 @@ public class ChessController implements chess.ChessController {
         return true;
     }
 
+    /**
+     * Méthode qui change le tour
+     */
     private void changeTurn() {
         turn = (turn == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
-        //view.displayMessage("Turn : " + (turn == PlayerColor.WHITE ? "WHITE" : "BLACK"));
     }
 
+    /**
+     * Méthode qui gère le deplacement dans la view et dans le tableau
+     * @param fromX position x de départ
+     * @param fromY position y de départ
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     */
     private void movePiece(int fromX, int fromY, int toX, int toY) {
         // déplacer la pièce au bon endroit
         board[fromX][fromY].move(toX, toY);
@@ -195,6 +268,9 @@ public class ChessController implements chess.ChessController {
         view.putPiece(board[toX][toY].getType(), board[toX][toY].getColor(), toX, toY);
     }
 
+    /**
+     * Méthode qui initialse une nouvelle partie
+     */
     @Override
     public void newGame() {
         cleanGUI();
@@ -205,6 +281,9 @@ public class ChessController implements chess.ChessController {
         setGUI();
     }
 
+    /**
+     * Méthode qui initialise le tableau de jeu
+     */
     private void setBoard() {
         if (board == null) return;
         PlayerColor c = PlayerColor.WHITE;
@@ -229,6 +308,9 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Méthode qui nettoye la view
+     */
     private void cleanGUI() {
         if (view == null) return;
         for (int i = 0; i < SIZE; ++i) {
@@ -238,6 +320,9 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Méthode qui initialise la view avec les pièces
+     */
     private void setGUI() {
         if (view == null || board == null) return;
         for (int i = 0; i < SIZE; ++i) {
@@ -248,6 +333,11 @@ public class ChessController implements chess.ChessController {
         }
     }
 
+    /**
+     * Méthode qui gère la promotion de pion
+     * @param toX position x de déstination
+     * @param toY position y de déstination
+     */
     private void gestionPromotion(int toX, int toY) {
         if (board[toX][toY].getType() == PieceType.PAWN) {
             if (turn == PlayerColor.WHITE && toY == SIZE - 1 || turn == PlayerColor.BLACK && toY == 0) {
@@ -267,7 +357,6 @@ public class ChessController implements chess.ChessController {
                         return new Queen(new Coord(toX, toY), turn);
                     }
                 },
-
                 new PromotionChoice() {
                     @Override
                     public String textValue() {
@@ -279,7 +368,6 @@ public class ChessController implements chess.ChessController {
                         return new Rook(new Coord(toX, toY), turn);
                     }
                 },
-
                 new PromotionChoice() {
                     @Override
                     public String textValue() {
@@ -291,7 +379,6 @@ public class ChessController implements chess.ChessController {
                         return new Bishop(new Coord(toX, toY), turn);
                     }
                 },
-
                 new PromotionChoice() {
                     @Override
                     public String textValue() {
@@ -311,6 +398,11 @@ public class ChessController implements chess.ChessController {
         view.putPiece(p.getType(), p.getColor(), toX, toY);
     }
 
+    /**
+     * Méthode qui vérifie si on met en echec le roi adverse
+     * @param attackers liste des coups de nos pièces
+     * @return si il y a echec
+     */
     private boolean checkMat(LinkedList<Coord> attackers) {
         // On cherche la position du roi adverse
         List<Coord> kingPos = findKings();
@@ -333,6 +425,10 @@ public class ChessController implements chess.ChessController {
         return attackers.size() != 0;
     }
 
+    /**
+     * Méthode qui vérifie si l'adversaire nous met en echec
+     * @return si on est en echec
+     */
     private boolean checkSelfMat() {
         // On cherche la position de son roi
         List<Coord> kingPos = findKings();
@@ -355,8 +451,12 @@ public class ChessController implements chess.ChessController {
         return false;
     }
 
+    /**
+     * Méthode qui retourne la position des rois
+     * @return at(0) : roi blanc, at(1) : roi noir
+     */
     private List<Coord> findKings() {   // list[0] = white, liste[1] = black
-        List<Coord> kingsPos = new LinkedList<Coord>();
+        List<Coord> kingsPos = new LinkedList<>();
 
         for (int i = 0; i < SIZE; ++i) {
             for (int j = 0; j < SIZE; ++j) {
@@ -434,7 +534,7 @@ public class ChessController implements chess.ChessController {
         List<Coord> kingPos = findKings();
         Coord allyKingPos = turn == PlayerColor.WHITE ? kingPos.get(1) : kingPos.get(0);
 
-        List<Coord> listWhichContainsKingPos = new LinkedList<Coord>();
+        List<Coord> listWhichContainsKingPos = new LinkedList<>();
 
         // On génére toute les positions des attaquants du roi
         for (Coord c : attackers) {
@@ -507,7 +607,7 @@ public class ChessController implements chess.ChessController {
         List<List<Coord>> allyMoves = board[allyKingPos.getX()][allyKingPos.getY()].listEatingMove();
         List<List<Coord>> defensiveMoveByMoving = defensiveMoveByCover(allyMoves);
 
-        List<Coord> listWhichContainsKingPos = new LinkedList<Coord>();
+        List<Coord> listWhichContainsKingPos = new LinkedList<>();
 
         // On génére toute les positions des attaquants du roi
         for (Coord c : attackers) {
