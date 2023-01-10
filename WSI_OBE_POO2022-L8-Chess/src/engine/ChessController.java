@@ -32,8 +32,9 @@ public class ChessController implements chess.ChessController {
 
     // region Methods
     /**
-     * Méthode qui initialise la vue et démarre une nouvelle partie
-     * @param view la vue à utiliser
+     * Nom          : start
+     * Description  : Méthode qui initialise la vue et démarre une nouvelle partie
+     * @param view  : la vue à utiliser
      */
     @Override
     public void start(ChessView view) {
@@ -43,12 +44,13 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui gère les mouvements
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
-     * @return boolean qui indique si un mouvement a été éffectué
+     * Nom          :
+     * Description  : Méthode qui gère les mouvements
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
+     * @return      : boolean qui indique si un mouvement a été éffectué
      */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
@@ -100,11 +102,12 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui va chercher un coordonnée dans une liste de liste de coordonnées
-     * @param listMove liste de liste dans laquelle on cherche la coord (toX,toY)
-     * @param toX postion x qu'on cherche
-     * @param toY postion y qu'on cherche
-     * @return
+     * Nom              :
+     * Description      : Méthode qui va chercher un coordonnée dans une liste de liste de coordonnées
+     * @param listMove  : liste de liste dans laquelle on cherche la coord (toX,toY)
+     * @param toX       : postion x qu'on cherche
+     * @param toY       : postion y qu'on cherche
+     * @return          : si on a trouvé la coordonnée dans les listes
      */
     private boolean findCoordInListMove(List<List<Coord>> listMove, int toX, int toY) {
         Coord find = new Coord(toX, toY);
@@ -119,9 +122,10 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthiode qui va enlever les mouvements illicites
-     * @param listMove la liste de mouvement que l'on veut remanier
-     * @return la nouvelle liste sans les mouvements illicites
+     * Nom              : refactorListMove
+     * Description      : Méthiode qui va enlever les mouvements illicites
+     * @param listMove  : la liste de mouvement que l'on veut remanier
+     * @return          : la nouvelle liste sans les mouvements illicites
      */
     private List<List<Coord>> refactorListMove(List<List<Coord>> listMove) {
         List<List<Coord>> refactorListMove = new LinkedList<>();
@@ -152,16 +156,17 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui indique si un mouvement est correct,
-     * si il y a une pièce à la coordonnées (fromX,fromY)
-     * si la pièce à la bonne couleur
-     * si cette pièce peut se déplacer vers (toX,toY)
-     * si la destination n'est pas occupé ou est occupé par une pièce adverse
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
-     * @return si le mouvement est accepté
+     * Nom          :
+     * Description  : Méthode qui indique si un mouvement est correct,
+     *                si il y a une pièce à la coordonnées (fromX,fromY)
+     *                si la pièce à la bonne couleur
+     *                si cette pièce peut se déplacer vers (toX,toY)
+     *                si la destination n'est pas occupé ou est occupé par une pièce adverse
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
+     * @return      : si le mouvement est accepté
      */
     private boolean acceptMove(int fromX, int fromY, int toX, int toY) {
         if (board[fromX][fromY] == null) return false;
@@ -174,12 +179,13 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui retourne la liste de mouvements correct pour une pièce donné
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
-     * @return la liste de mouvements de la pièce qui se trouve à (fromX,fromY)
+     * Nom          :
+     * Description  : Méthode qui retourne la liste de mouvements correct pour une pièce donné
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
+     * @return      : la liste de mouvements de la pièce qui se trouve à (fromX,fromY)
      */
     private List<List<Coord>> getMoves(int fromX, int fromY, int toX, int toY) {
         if (board[toX][toY] == null) {
@@ -194,11 +200,12 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui gère la prise en passant
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
+     * Nom          : gestionEnPassant
+     * Description  : Méthode qui gère la prise en passant
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
      */
     private void gestionEnPassant(int fromX, int fromY, int toX, int toY) {
         // check enpassant
@@ -214,12 +221,13 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui gère le grand et petit roque
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
-     * @return si on effectue un roque
+     * Nom          : gestionCastle
+     * Description  : Méthode qui gère le grand et petit roque
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
+     * @return        si on effectue un roque
      */
     private boolean gestionCastle(int fromX, int fromY, int toX, int toY) {
         // si on est en échec
@@ -253,18 +261,20 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui change le tour
+     * Nom          : changeTurn
+     * Description  : Méthode qui change le tour
      */
     private void changeTurn() {
         turn = (turn == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE);
     }
 
     /**
-     * Méthode qui gère le deplacement dans la view et dans le tableau
-     * @param fromX position x de départ
-     * @param fromY position y de départ
-     * @param toX position x de déstination
-     * @param toY position y de déstination
+     * Nom          :
+     * Description  : Méthode qui gère le deplacement dans la view et dans le tableau
+     * @param fromX : position x de départ
+     * @param fromY : position y de départ
+     * @param toX   : position x de déstination
+     * @param toY   : position y de déstination
      */
     private void movePiece(int fromX, int fromY, int toX, int toY) {
         // déplacer la pièce au bon endroit
@@ -276,7 +286,8 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui initialse une nouvelle partie
+     * Nom          : newGame
+     * Description  : Méthode qui initialse une nouvelle partie
      */
     @Override
     public void newGame() {
@@ -289,7 +300,8 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui initialise le tableau de jeu
+     * Nom          : setBoard
+     * Description  : Méthode qui initialise le tableau de jeu
      */
     private void setBoard() {
         if (board == null) return;
@@ -316,7 +328,8 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui nettoye la view
+     * Nom          : cleanGUI
+     * Description  : Méthode qui nettoye la view
      */
     private void cleanGUI() {
         if (view == null) return;
@@ -328,7 +341,8 @@ public class ChessController implements chess.ChessController {
     }
 
     /**
-     * Méthode qui initialise la view avec les pièces
+     * Nom          : setGUI
+     * Description  : Méthode qui initialise la view avec les pièces
      */
     private void setGUI() {
         if (view == null || board == null) return;

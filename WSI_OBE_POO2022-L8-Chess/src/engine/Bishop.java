@@ -9,7 +9,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.Math;
-// @author : obaume
+
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe représente la pièce "Bishop" dans un jeu d'échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
 public class Bishop extends Piece{
 
     // region Contructor

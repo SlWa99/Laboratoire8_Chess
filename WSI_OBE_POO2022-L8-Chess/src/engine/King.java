@@ -9,7 +9,15 @@ import engine.util.MoveLin;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-// @author : obaume
+
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe représente la pièce "King" dans un jeu d'échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
 public class King extends Piece{
 
     // coordonnées du petit rook et grand rook

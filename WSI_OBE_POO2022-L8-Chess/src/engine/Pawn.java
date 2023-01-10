@@ -9,7 +9,14 @@ import engine.util.MoveLin;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-// @author : obaume
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe représente la pièce "Pawn" dans un jeu d'échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
 public class Pawn extends Piece{
     // region Constructor
     public Pawn(Coord coord, PlayerColor color) {
