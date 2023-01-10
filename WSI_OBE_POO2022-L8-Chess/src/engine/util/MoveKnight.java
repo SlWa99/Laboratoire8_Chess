@@ -1,20 +1,35 @@
 package engine.util;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe permet de générer les mouvements de la pièce cavalier dans
+ *                 un jeu d'échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
+
 public class MoveKnight extends Movement {
-    // region Constructor
-    public MoveKnight(int range) {
-        super(range);
-    }
-    // endregion
 
     // region Parameter
     private final int NBR_VECTORS = 8;
     // endregion
 
+    // region Contructor
+    /**
+     * Nom          : MoveKnight
+     * Description  : Permet de contruire un MoveKnight en spécifiant la range de déplacement autorisée.
+     * @param range : Range de déplacement autorisée.
+     * @return      : L'objet MoveKnight construit par le constructeur
+     **/
+    public MoveKnight(int range) {
+        super(range);
+    }
+    // endregion
 
     // region Methods
     @Override

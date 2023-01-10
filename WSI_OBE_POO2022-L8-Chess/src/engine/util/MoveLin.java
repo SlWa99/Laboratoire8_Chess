@@ -4,17 +4,34 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe permet de générer quatre vecteurs de points à partir d'un
+ *                 point central. Les vecteurs sont disposés en croix autour du point central
+ *                 (croix droite +).
+ *  -----------------------------------------------------------------------------------
+ **/
+
 public class MoveLin extends Movement{
-    // region Constructor
-    public MoveLin(int range) {
-        super(range);
-    }
-    // endregion
 
     // region Parameter
     private final int NBR_VECTORS = 4;
     // endregion
 
+    // region Constructor
+    /**
+     * Nom          : MoveLin
+     * Description  : Permet de contruire un MoveLin en spécifiant la range de déplacement autorisée.
+     * @param range : Range de déplacement autorisée.
+     * @return      : L'objet MoveLin construit par le constructeur
+     **/
+    public MoveLin(int range) {
+        super(range);
+    }
+    // endregion
 
     // region Methods
     @Override

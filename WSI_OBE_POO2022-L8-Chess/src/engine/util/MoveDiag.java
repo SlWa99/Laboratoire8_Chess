@@ -4,18 +4,36 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MoveDiag extends Movement {
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe permet de générer quatre vecteurs de points à partir d'un
+ *                 point central. Les vecteurs sont disposés en croix diagonale, autour du point central
+ *                 (croix diagonale x).
+ *  -----------------------------------------------------------------------------------
+ **/
 
-    // region Contructor
-    public MoveDiag(int range) {
-        super(range);
-    }
-    // endregion
+public class MoveDiag extends Movement {
 
     // region Parameter
     private final int NBR_VECTORS = 4;
     // endregion
 
+    // region Contructor
+    /**
+     * Nom          : MoveDiag
+     * Description  : Permet de contruire un MoveDiag en spécifiant la range de déplacement autorisée.
+     * @param range : Range de déplacement autorisée.
+     * @return      : L'objet MoveDiag construit par le constructeur
+     **/
+    public MoveDiag(int range) {
+        super(range);
+    }
+    // endregion
+
+    // region Methods
     @Override
     public List<List<Coord>> listMove(Coord coord) {
         List<List<Coord>> vectors = new LinkedList<>();
@@ -43,4 +61,5 @@ public class MoveDiag extends Movement {
     public List<List<Coord>> listEatingMove(Coord coord) {
         return listMove(coord);
     }
+    // endregion
 }

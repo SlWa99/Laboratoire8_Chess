@@ -5,24 +5,38 @@ import chess.PlayerColor;
 import engine.util.Coord;
 import engine.util.MoveDiag;
 import engine.util.MoveLin;
-
 import java.util.LinkedList;
 import java.util.List;
 
-// @author : slimani
+/**
+ *  -----------------------------------------------------------------------------------
+ * @Authors      : Slimani Walid & Baume Oscar
+ * @Date         : 07.01.2023
+ *
+ * @Description  : Cette classe représente la pièce "Queen" dans un jeu d'échecs.
+ *  -----------------------------------------------------------------------------------
+ **/
+
 public class Queen extends Piece {
+
+    // region Parameters
+    MoveDiag md;
+    MoveLin ml;
+    // endregion
+
     // region Constructor
+    /**
+     * Nom          : Queen
+     * Description  : Permet de construire une pièce de type Queen
+     * @param coord : Coordonnée à laquelle il faut créer la pièce
+     * @param color : Couleur de la pièce.
+     * @return      : L'objet Queen construit par le constructeur
+     **/
     public Queen(Coord coord, PlayerColor color) {
         super(coord, color, PieceType.QUEEN);
         md = new MoveDiag(8);
         ml = new MoveLin(8);
     }
-    // endregion
-
-    // region Parameters
-    MoveDiag md;
-    MoveLin ml;
-
     // endregion
 
     // region Methods
